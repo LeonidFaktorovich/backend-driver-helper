@@ -38,6 +38,7 @@ AddRoute::AddRoute(const userver::components::ComponentConfig& config,
 std::string AddRoute::HandleRequestThrow(
     const userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext&) const {
+    using userver::crypto::base64::Base64Decode;
   const auto& token =
       userver::crypto::base64::Base64Decode(request.GetHeader("token"));
   userver::formats::json::Value json =
@@ -49,13 +50,13 @@ std::string AddRoute::HandleRequestThrow(
   route.start_y = json_route["start"]["y"].ConvertTo<double>();
   route.finish_x = json_route["finish"]["x"].ConvertTo<double>();
   route.finish_y = json_route["finish"]["y"].ConvertTo<double>();
-  route.owner = userver::crypto::base64::Base64Decode(
+  route.owner = Base64Decode(
       json_route["owner"].As<std::string>());
   route.date_start = userver::utils::datetime::DateFromRFC3339String(
-      json_route["date_start"].As<std::string>());
+      Base64Decode(json_route["date_start"].As<std::string>()));
   route.time_start = userver::utils::datetime::TimeOfDay<
       std::chrono::duration<long long, std::ratio<60>>>(
-      json_route["time_start"].As<std::string>());
+      Base64Decode(json_route["time_start"].As<std::string>()));
 
   const userver::storages::postgres::Query kInsertRoute{
       "INSERT INTO routes_table (start_x, start_y, finish_x, finish_y, token, "
