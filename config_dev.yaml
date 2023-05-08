@@ -13,7 +13,7 @@ components_manager:
             method: POST
  
         users-database:
-            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'  # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
+            dbconnection: 'postgresql://postgres:dricer@localhost:5432/postgres'  # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 
@@ -23,7 +23,7 @@ components_manager:
             method: POST
 
         friends-database:
-            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
+            dbconnection: 'postgresql://postgres:dricer@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 
@@ -33,12 +33,17 @@ components_manager:
             method: POST
 
         routes-database:
-            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
+            dbconnection: 'postgresql://postgres:dricer@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
         
         handler-map:
             path: /map
+            task_processor: main-task-processor
+            method: GET
+
+        handler-friends:
+            path: /friends
             task_processor: main-task-processor
             method: GET
  

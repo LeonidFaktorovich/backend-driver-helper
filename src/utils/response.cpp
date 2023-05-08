@@ -1,4 +1,6 @@
-#include "response.hpp"
+#include "userver/formats/json/value_builder.hpp"
+#include <string>
+#include <utils/response.hpp>
 #include <userver/formats/json/inline.hpp>
 #include <userver/formats/json/serialize_duration.hpp>
 #include <userver/utils/datetime.hpp>
@@ -10,10 +12,10 @@ std::string TokenResponse(std::string_view token) {
   return userver::formats::json::ToString(response.ExtractValue());
 }
 
-std::string RoutesResponse(const std::vector<Route>& routes) {
+std::string RoutesResponse(const std::vector<Route> &routes) {
   userver::formats::json::ValueBuilder response;
   response["routes"] = userver::formats::json::MakeArray();
-  for (const auto& route : routes) {
+  for (const auto &route : routes) {
     userver::formats::json::ValueBuilder value;
     value["start"] = userver::formats::json::MakeObject("x", route.start_x, "y",
                                                         route.start_y);
@@ -28,4 +30,13 @@ std::string RoutesResponse(const std::vector<Route>& routes) {
   }
   return userver::formats::json::ToString(response.ExtractValue());
 }
-}  // namespace response
+
+std::string LoginsResponse(const std::vector<std::string> &logins) {
+  userver::formats::json::ValueBuilder response;
+  response["friends"] = userver::formats::json::MakeArray();
+  for (const auto& login : logins) {
+    response["friends"].PushBack(login);
+  }
+  return userver::formats::json::ToString(response.ExtractValue());
+}
+} // namespace response

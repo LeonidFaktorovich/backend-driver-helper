@@ -1,13 +1,12 @@
-#include "handler_friend.hpp"
-#include "response.hpp"
-
+#include <handlers/add_friend.hpp>
+#include <utils/response.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 
 namespace handler {
 
-Friend::Friend(const userver::components::ComponentConfig& config,
-               const userver::components::ComponentContext& context)
+AddFriend::AddFriend(const userver::components::ComponentConfig &config,
+                     const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
       friends_cluster_(
           context
@@ -28,14 +27,14 @@ Friend::Friend(const userver::components::ComponentConfig& config,
   friends_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
 }
 
-std::string Friend::HandleRequestThrow(
-    const userver::server::http::HttpRequest& request,
-    userver::server::request::RequestContext&) const {
-  const auto& token =
+std::string AddFriend::HandleRequestThrow(
+    const userver::server::http::HttpRequest &request,
+    userver::server::request::RequestContext &) const {
+  const auto &token =
       userver::crypto::base64::Base64Decode(request.GetHeader("token"));
   userver::formats::json::Value json =
       userver::formats::json::FromString(request.RequestBody());
-  const auto& friend_login = userver::crypto::base64::Base64Decode(
+  const auto &friend_login = userver::crypto::base64::Base64Decode(
       json["friend_login"].As<std::string>());
 
   const userver::storages::postgres::Query kSelectToken{
@@ -50,7 +49,7 @@ std::string Friend::HandleRequestThrow(
     return response::ErrorResponse("User with login {} not found",
                                    friend_login);
   }
-  const auto& friend_token = res.AsSingleRow<std::string>();
+  const auto &friend_token = res.AsSingleRow<std::string>();
 
   const userver::storages::postgres::Query kInsertFriends{
       "INSERT INTO friends_table (user_token, friend_token) "
@@ -58,10 +57,10 @@ std::string Friend::HandleRequestThrow(
       userver::storages::postgres::Query::Name{"insert_friend"},
   };
   res = friends_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kSlave, kInsertFriends, token,
-      friend_token);
+      userver::storages::postgres::ClusterHostType::kSlave, kInsertFriends,
+      token, friend_token);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Friend has been added";
 }
 
-}  // namespace handler
+} // namespace handler

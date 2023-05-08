@@ -1,14 +1,13 @@
-#include "handler_register.hpp"
-#include "response.hpp"
-#include "token.hpp"
-
+#include <handlers/register.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
+#include <utils/response.hpp>
+#include <utils/token.hpp>
 
 namespace handler {
 
-Register::Register(const userver::components::ComponentConfig& config,
-                   const userver::components::ComponentContext& context)
+Register::Register(const userver::components::ComponentConfig &config,
+                   const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
       pg_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
@@ -25,14 +24,14 @@ Register::Register(const userver::components::ComponentConfig& config,
   pg_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
 }
 
-std::string Register::HandleRequestThrow(
-    const userver::server::http::HttpRequest& request,
-    userver::server::request::RequestContext&) const {
+std::string
+Register::HandleRequestThrow(const userver::server::http::HttpRequest &request,
+                             userver::server::request::RequestContext &) const {
   userver::formats::json::Value json =
       userver::formats::json::FromString(request.RequestBody());
-  const auto& login =
+  const auto &login =
       userver::crypto::base64::Base64Decode(json["login"].As<std::string>());
-  const auto& password =
+  const auto &password =
       userver::crypto::base64::Base64Decode(json["password"].As<std::string>());
 
   if (LoginExist(login)) {
@@ -53,7 +52,7 @@ std::string Register::HandleRequestThrow(
   return response::TokenResponse(token);
 }
 
-bool Register::LoginExist(const std::string& login) const {
+bool Register::LoginExist(const std::string &login) const {
   const userver::storages::postgres::Query kSelectToken{
       "SELECT token FROM users_table WHERE login = $1",
       userver::storages::postgres::Query::Name{"select_token"},
@@ -64,4 +63,4 @@ bool Register::LoginExist(const std::string& login) const {
   return !res.IsEmpty();
 }
 
-}  // namespace handler
+} // namespace handler
