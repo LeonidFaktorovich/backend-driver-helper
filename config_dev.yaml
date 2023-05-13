@@ -11,31 +11,16 @@ components_manager:
             path: /register
             task_processor: main-task-processor
             method: POST
- 
-        users-database:
-            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'  # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
-            blocking_task_processor: fs-task-processor
-            dns_resolver: async
 
         handler-add-friend:
             path: /add_friend
             task_processor: main-task-processor
             method: POST
 
-        friends-database:
-            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
-            blocking_task_processor: fs-task-processor
-            dns_resolver: async
-
         handler-add-route:
             path: /add_route
             task_processor: main-task-processor
             method: POST
-
-        routes-database:
-            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
-            blocking_task_processor: fs-task-processor
-            dns_resolver: async
         
         handler-map:
             path: /map
@@ -46,6 +31,31 @@ components_manager:
             path: /friends
             task_processor: main-task-processor
             method: GET
+        
+        handler-avatar-path:
+            path: /avatar_path
+            task_processor: main-task-processor
+            method: GET
+
+        users-database:
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'  # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+        
+        friends-database:
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+
+        routes-database:
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+
+        avatars-database:
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
  
         testsuite-support:
  
@@ -85,4 +95,3 @@ components_manager:
             worker_threads: 4
  
     default_task_processor: main-task-processor
-

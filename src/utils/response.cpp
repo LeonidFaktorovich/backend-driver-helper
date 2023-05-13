@@ -35,4 +35,10 @@ std::string LoginsResponse(const std::vector<std::string> &logins) {
   }
   return userver::formats::json::ToString(response.ExtractValue());
 }
+
+std::string PathResponse(std::string_view path) {
+  userver::formats::json::ValueBuilder response;
+  response["path"] = userver::crypto::base64::Base64Encode(path);
+  return userver::formats::json::ToString(response.ExtractValue());
+}
 } // namespace response

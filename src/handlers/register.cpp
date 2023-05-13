@@ -1,8 +1,8 @@
 #include <handlers/register.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
+#include <utils/random_generators.hpp>
 #include <utils/response.hpp>
-#include <utils/token_generation.hpp>
 #include <utils/token_helpers.hpp>
 
 namespace handler {
