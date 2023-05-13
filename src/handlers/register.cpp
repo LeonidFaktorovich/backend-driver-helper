@@ -2,7 +2,8 @@
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/response.hpp>
-#include <utils/token.hpp>
+#include <utils/token_generation.hpp>
+#include <utils/token_helpers.hpp>
 
 namespace handler {
 
@@ -19,7 +20,6 @@ Register::Register(const userver::components::ComponentConfig &config,
         password TEXT NOT NULL
       )
     )~";
-
   using userver::storages::postgres::ClusterHostType;
   pg_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
 }
@@ -34,33 +34,15 @@ Register::HandleRequestThrow(const userver::server::http::HttpRequest &request,
   const auto &password =
       userver::crypto::base64::Base64Decode(json["password"].As<std::string>());
 
-  if (LoginExist(login)) {
+  if (helpers::GetToken(pg_cluster_, login).has_value()) {
     request.SetResponseStatus(userver::server::http::HttpStatus::kConflict);
     return response::ErrorResponse("User with login {} already exists", login);
   }
 
-  const userver::storages::postgres::Query kInsertToken{
-      "INSERT INTO users_table (token, login, password) "
-      "VALUES ($1, $2, $3) ",
-      userver::storages::postgres::Query::Name{"insert_token"},
-  };
   const std::string token = GenerateToken();
-  userver::storages::postgres::ResultSet res =
-      pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                           kInsertToken, token, login, password);
+  helpers::InsertToken(token, login, password, pg_cluster_);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return response::TokenResponse(token);
-}
-
-bool Register::LoginExist(const std::string &login) const {
-  const userver::storages::postgres::Query kSelectToken{
-      "SELECT token FROM users_table WHERE login = $1",
-      userver::storages::postgres::Query::Name{"select_token"},
-  };
-  userver::storages::postgres::ResultSet res =
-      pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                           kSelectToken, login);
-  return !res.IsEmpty();
 }
 
 } // namespace handler

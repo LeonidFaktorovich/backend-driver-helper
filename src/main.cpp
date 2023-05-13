@@ -6,11 +6,11 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 #include <handlers/add_friend.hpp>
+#include <handlers/add_route.hpp>
 #include <handlers/friends.hpp>
 #include <handlers/login.hpp>
 #include <handlers/map.hpp>
 #include <handlers/register.hpp>
-#include <handlers/route.hpp>
 
 int main(int argc, char *argv[]) {
   const auto component_list =

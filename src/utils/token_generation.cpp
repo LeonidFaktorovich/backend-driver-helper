@@ -1,5 +1,5 @@
-#include <utils/token.hpp>
 #include <random>
+#include <utils/token_generation.hpp>
 
 std::string GenerateToken() {
   static const std::string alpha_numeric = "0123456789"

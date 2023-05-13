@@ -1,9 +1,5 @@
-#include "userver/formats/json/value_builder.hpp"
-#include <string>
-#include <utils/response.hpp>
 #include <userver/formats/json/inline.hpp>
-#include <userver/formats/json/serialize_duration.hpp>
-#include <userver/utils/datetime.hpp>
+#include <utils/response.hpp>
 
 namespace response {
 std::string TokenResponse(std::string_view token) {
@@ -34,7 +30,7 @@ std::string RoutesResponse(const std::vector<Route> &routes) {
 std::string LoginsResponse(const std::vector<std::string> &logins) {
   userver::formats::json::ValueBuilder response;
   response["friends"] = userver::formats::json::MakeArray();
-  for (const auto& login : logins) {
+  for (const auto &login : logins) {
     response["friends"].PushBack(login);
   }
   return userver::formats::json::ToString(response.ExtractValue());

@@ -1,7 +1,9 @@
 #include <handlers/add_friend.hpp>
-#include <utils/response.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
+#include <utils/friend_helpers.hpp>
+#include <utils/response.hpp>
+#include <utils/token_helpers.hpp>
 
 namespace handler {
 
@@ -18,8 +20,7 @@ AddFriend::AddFriend(const userver::components::ComponentConfig &config,
   constexpr auto kCreateTable = R"~(
       CREATE TABLE IF NOT EXISTS friends_table (
         user_token TEXT NOT NULL,
-        friend_token TEXT NOT NULL,
-        UNIQUE (user_token, friend_token)
+        friend_token TEXT NOT NULL
       )
     )~";
 
@@ -37,28 +38,14 @@ std::string AddFriend::HandleRequestThrow(
   const auto &friend_login = userver::crypto::base64::Base64Decode(
       json["friend_login"].As<std::string>());
 
-  const userver::storages::postgres::Query kSelectToken{
-      "SELECT token FROM users_table WHERE login = $1",
-      userver::storages::postgres::Query::Name{"select_token"},
-  };
-  userver::storages::postgres::ResultSet res = users_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kSlave, kSelectToken,
-      friend_login);
-  if (res.IsEmpty()) {
+  const auto friend_token = helpers::GetToken(users_cluster_, friend_login);
+  if (!friend_token.has_value()) {
     request.SetResponseStatus(userver::server::http::HttpStatus::kNotFound);
     return response::ErrorResponse("User with login {} not found",
                                    friend_login);
   }
-  const auto &friend_token = res.AsSingleRow<std::string>();
 
-  const userver::storages::postgres::Query kInsertFriends{
-      "INSERT INTO friends_table (user_token, friend_token) "
-      "VALUES ($1, $2) ",
-      userver::storages::postgres::Query::Name{"insert_friend"},
-  };
-  res = friends_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kSlave, kInsertFriends,
-      token, friend_token);
+  helpers::InsertFriend(friends_cluster_, token, friend_token.value());
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Friend has been added";
 }

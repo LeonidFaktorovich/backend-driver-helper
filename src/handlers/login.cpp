@@ -2,6 +2,7 @@
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/response.hpp>
+#include <utils/token_helpers.hpp>
 
 namespace handler {
 
@@ -22,19 +23,12 @@ Login::HandleRequestThrow(const userver::server::http::HttpRequest &request,
   const auto &password =
       userver::crypto::base64::Base64Decode(json["password"].As<std::string>());
 
-  const userver::storages::postgres::Query kSelectToken{
-      "SELECT token FROM users_table WHERE (login, password) = ($1, $2)",
-      userver::storages::postgres::Query::Name{"select_token"},
-  };
-  userver::storages::postgres::ResultSet res =
-      pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                           kSelectToken, login, password);
-  if (res.IsEmpty()) {
+  const auto res = helpers::GetToken(pg_cluster_, login, password);
+  if (!res.has_value()) {
     request.SetResponseStatus(userver::server::http::HttpStatus::kNotFound);
-    return response::ErrorResponse("User not found");
+    return response::ErrorResponse("Invalid login or password");
   }
-
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-  return response::TokenResponse(res.AsSingleRow<std::string>());
+  return response::TokenResponse(res.value());
 }
 } // namespace handler

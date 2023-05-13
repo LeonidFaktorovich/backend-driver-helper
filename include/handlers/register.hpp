@@ -17,7 +17,6 @@ public:
                      userver::server::request::RequestContext &) const override;
 
 private:
-  bool LoginExist(const std::string &login) const;
   userver::storages::postgres::ClusterPtr pg_cluster_;
 };
 } // namespace handler

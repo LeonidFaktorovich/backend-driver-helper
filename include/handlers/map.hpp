@@ -18,10 +18,6 @@ public:
                      userver::server::request::RequestContext &) const override;
 
 private:
-  std::vector<std::string> GetFriendsTokens(const std::string &token) const;
-  void EmplaceRoutes(const std::string &token,
-                     std::vector<Route> &routes) const;
-  void ReplaceTokenWithLogin(std::vector<Route> &routes) const;
   userver::storages::postgres::ClusterPtr friends_cluster_;
   userver::storages::postgres::ClusterPtr routes_cluster_;
   userver::storages::postgres::ClusterPtr users_cluster_;

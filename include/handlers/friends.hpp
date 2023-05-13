@@ -2,7 +2,6 @@
 
 #include <userver/server/handlers/http_handler_base.hpp>
 #include <userver/storages/postgres/cluster.hpp>
-#include <utils/route.hpp>
 
 namespace handler {
 
@@ -18,9 +17,6 @@ public:
                      userver::server::request::RequestContext &) const override;
 
 private:
-  std::vector<std::string> GetFriendsTokens(const std::string &token) const;
-  std::string GetLogin(const std::string& token) const;
-
   userver::storages::postgres::ClusterPtr friends_cluster_;
   userver::storages::postgres::ClusterPtr users_cluster_;
 };

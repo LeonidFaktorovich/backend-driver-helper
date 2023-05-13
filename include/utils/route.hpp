@@ -1,7 +1,6 @@
 #pragma once
 
 #include <userver/storages/postgres/io/date.hpp>
-#include <userver/utils/datetime/date.hpp>
 #include <userver/utils/time_of_day.hpp>
 
 struct Route {

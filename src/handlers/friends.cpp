@@ -1,9 +1,10 @@
 #include <handlers/friends.hpp>
-#include <string>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
+#include <utils/friend_helpers.hpp>
 #include <utils/response.hpp>
 #include <utils/route.hpp>
+#include <utils/token_helpers.hpp>
 
 namespace handler {
 
@@ -23,35 +24,16 @@ Friends::HandleRequestThrow(const userver::server::http::HttpRequest &request,
                             userver::server::request::RequestContext &) const {
   const auto &token =
       userver::crypto::base64::Base64Decode(request.GetHeader("token"));
-  auto friends_tokens = GetFriendsTokens(token);
+
+  const auto friends_tokens = helpers::GetFriends(friends_cluster_, token);
+
   std::vector<std::string> friends_logins;
-  for (const auto &token : friends_tokens) {
-    friends_logins.push_back(GetLogin(token));
+  for (const auto &friend_token : friends_tokens) {
+    friends_logins.push_back(
+        helpers::GetLogin(users_cluster_, friend_token).value());
   }
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return response::LoginsResponse(friends_logins);
-}
-
-std::vector<std::string> Friends::GetFriendsTokens(const std::string &token) const {
-  static const userver::storages::postgres::Query kSelectFriends{
-      "SELECT friend_token FROM friends_table WHERE user_token = $1",
-      userver::storages::postgres::Query::Name{"select_friends"},
-  };
-  userver::storages::postgres::ResultSet res = friends_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kSlave, kSelectFriends,
-      token);
-  return res.AsContainer<std::vector<std::string>>();
-}
-
-std::string Friends::GetLogin(const std::string& token) const {
-  static const userver::storages::postgres::Query kSelectLogin{
-      "SELECT login FROM users_table WHERE token = $1",
-      userver::storages::postgres::Query::Name{"select_login"},
-  };
-  userver::storages::postgres::ResultSet res = users_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kSlave, kSelectLogin,
-        token);
-  return res.AsSingleRow<std::string>();
 }
 
 } // namespace handler

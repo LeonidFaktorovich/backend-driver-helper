@@ -1,13 +1,11 @@
 #pragma once
 
-#include <fmt/core.h>
-#include <string>
-#include <utils/route.hpp>
 #include <userver/crypto/base64.hpp>
 #include <userver/formats/json/value_builder.hpp>
-#include <vector>
+#include <utils/route.hpp>
 
 namespace response {
+
 template <typename... T>
 std::string ErrorResponse(fmt::format_string<T...> fmt, T &&...args) {
   userver::formats::json::ValueBuilder response;
@@ -18,5 +16,5 @@ std::string ErrorResponse(fmt::format_string<T...> fmt, T &&...args) {
 
 std::string TokenResponse(std::string_view token);
 std::string RoutesResponse(const std::vector<Route> &routes);
-std::string LoginsResponse(const std::vector<std::string>& logins);
+std::string LoginsResponse(const std::vector<std::string> &logins);
 } // namespace response

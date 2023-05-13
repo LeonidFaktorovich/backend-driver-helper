@@ -1,12 +1,8 @@
-#include <handlers/route.hpp>
+#include <handlers/add_route.hpp>
 #include <userver/components/component_context.hpp>
-#include <userver/crypto/base64.hpp>
-#include <userver/formats/parse/common_containers.hpp>
 #include <userver/storages/postgres/component.hpp>
-#include <userver/utils/datetime/date.hpp>
-#include <userver/utils/time_of_day.hpp>
 #include <utils/response.hpp>
-#include <utils/route.hpp>
+#include <utils/route_helpers.hpp>
 
 namespace handler {
 
@@ -25,8 +21,7 @@ AddRoute::AddRoute(const userver::components::ComponentConfig &config,
         finish_y DOUBLE PRECISION NOT NULL,
         token TEXT NOT NULL PRIMARY KEY,
         date DATE NOT NULL,
-        time TIME NOT NULL,
-        UNIQUE (start_x, start_y, finish_x, finish_y, token, date, time)
+        time TIME NOT NULL
       )
     )~";
 
@@ -54,17 +49,7 @@ AddRoute::HandleRequestThrow(const userver::server::http::HttpRequest &request,
   route.time_start = userver::utils::datetime::TimeOfDay<
       std::chrono::duration<long long, std::ratio<60>>>(
       Base64Decode(json_route["time_start"].As<std::string>()));
-
-  const userver::storages::postgres::Query kInsertRoute{
-      "INSERT INTO routes_table (start_x, start_y, finish_x, finish_y, token, "
-      "date, time) "
-      "VALUES ($1, $2, $3, $4, $5, $6, $7) ",
-      userver::storages::postgres::Query::Name{"insert_route"},
-  };
-  pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                       kInsertRoute, route.start_x, route.start_y,
-                       route.finish_x, route.finish_y, token, route.date_start,
-                       route.time_start);
+  helpers::InsertRoute(pg_cluster_, token, route);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Route has been added";
 }
