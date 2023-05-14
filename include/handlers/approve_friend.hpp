@@ -5,12 +5,12 @@
 
 namespace handler {
 
-class AddFriend final : public userver::server::handlers::HttpHandlerBase {
+class ApproveFriend final : public userver::server::handlers::HttpHandlerBase {
 public:
-  static constexpr std::string_view kName = "handler-add-friend";
+  static constexpr std::string_view kName = "handler-approve-friend";
 
-  AddFriend(const userver::components::ComponentConfig &config,
-            const userver::components::ComponentContext &context);
+  ApproveFriend(const userver::components::ComponentConfig &config,
+                const userver::components::ComponentContext &context);
 
   std::string
   HandleRequestThrow(const userver::server::http::HttpRequest &request,

@@ -1,9 +1,11 @@
 #include "handlers/delete_route.hpp"
 #include <handlers/add_friend.hpp>
 #include <handlers/add_route.hpp>
+#include <handlers/approve_friend.hpp>
 #include <handlers/avatar_path.hpp>
 #include <handlers/delete_friend.hpp>
 #include <handlers/delete_route.hpp>
+#include <handlers/dismiss_friend.hpp>
 #include <handlers/friends.hpp>
 #include <handlers/login.hpp>
 #include <handlers/map.hpp>
@@ -21,9 +23,11 @@ int main(int argc, char *argv[]) {
       userver::components::MinimalServerComponentList()
           .Append<handler::AddFriend>()
           .Append<handler::AddRoute>()
+          .Append<handler::ApproveFriend>()
           .Append<handler::AvatarPath>()
           .Append<handler::DeleteFriend>()
           .Append<handler::DeleteRoute>()
+          .Append<handler::DismissFriend>()
           .Append<handler::Friends>()
           .Append<handler::Login>()
           .Append<handler::Map>()
@@ -32,6 +36,7 @@ int main(int argc, char *argv[]) {
           .Append<userver::components::Postgres>("friends-database")
           .Append<userver::components::Postgres>("routes-database")
           .Append<userver::components::Postgres>("users-database")
+          .Append<userver::components::Postgres>("friend-requests-database")
           .Append<userver::components::TestsuiteSupport>()
           .Append<userver::clients::dns::Component>();
   return userver::utils::DaemonMain(argc, argv, component_list);

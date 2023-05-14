@@ -11,6 +11,11 @@ components_manager:
             path: /add_route
             task_processor: main-task-processor
             method: POST
+        
+        handler-approve-friend:
+            path: /approve_friend
+            task_processor: main-task-processor
+            method: POST
 
         handler-avatar-path:
             path: /avatar_path
@@ -24,6 +29,11 @@ components_manager:
 
         handler-delete-route:
             path: /delete_route
+            task_processor: main-task-processor
+            method: POST
+
+        handler-dismiss-friend:
+            path: /dismiss_friend
             task_processor: main-task-processor
             method: POST
 
@@ -63,6 +73,11 @@ components_manager:
             dns_resolver: async
 
         avatars-database:
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+
+        friend-requests-database:
             dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
