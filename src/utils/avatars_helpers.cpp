@@ -34,7 +34,7 @@ void InsertAvatarPath(userver::storages::postgres::ClusterPtr cluster,
       "VALUES ($1, $2) ",
       userver::storages::postgres::Query::Name{"insert_path"},
   };
-  cluster->Execute(userver::storages::postgres::ClusterHostType::kSlave,
+  cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
                    kInsertPath, token, path);
 }
 } // namespace helpers

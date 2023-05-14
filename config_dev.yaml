@@ -1,17 +1,7 @@
 # /// [Postgres service sample - static config]
 # yaml
 components_manager:
-    components:                       # Configuring components that were registered via component_list
-        handler-login:
-            path: /login
-            task_processor: main-task-processor
-            method: POST
-
-        handler-register:
-            path: /register
-            task_processor: main-task-processor
-            method: POST
-
+    components:                      # Configuring components that were registered via component_list
         handler-add-friend:
             path: /add_friend
             task_processor: main-task-processor
@@ -21,21 +11,41 @@ components_manager:
             path: /add_route
             task_processor: main-task-processor
             method: POST
-        
-        handler-map:
-            path: /map
+
+        handler-avatar-path:
+            path: /avatar_path
             task_processor: main-task-processor
             method: GET
+        
+        handler-delete-friend:
+            path: /delete_friend
+            task_processor: main-task-processor
+            method: POST
+
+        handler-delete-route:
+            path: /delete_route
+            task_processor: main-task-processor
+            method: POST
 
         handler-friends:
             path: /friends
             task_processor: main-task-processor
             method: GET
-        
-        handler-avatar-path:
-            path: /avatar_path
+
+        handler-login:
+            path: /login
+            task_processor: main-task-processor
+            method: POST
+
+        handler-map:
+            path: /map
             task_processor: main-task-processor
             method: GET
+
+        handler-register:
+            path: /register
+            task_processor: main-task-processor
+            method: POST
 
         users-database:
             dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'  # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]

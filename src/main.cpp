@@ -1,3 +1,13 @@
+#include "handlers/delete_route.hpp"
+#include <handlers/add_friend.hpp>
+#include <handlers/add_route.hpp>
+#include <handlers/avatar_path.hpp>
+#include <handlers/delete_friend.hpp>
+#include <handlers/delete_route.hpp>
+#include <handlers/friends.hpp>
+#include <handlers/login.hpp>
+#include <handlers/map.hpp>
+#include <handlers/register.hpp>
 #include <userver/clients/dns/component.hpp>
 #include <userver/components/minimal_server_component_list.hpp>
 #include <userver/server/handlers/http_handler_base.hpp>
@@ -5,13 +15,6 @@
 #include <userver/storages/postgres/component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
-#include <handlers/add_friend.hpp>
-#include <handlers/add_route.hpp>
-#include <handlers/avatar_path.hpp>
-#include <handlers/friends.hpp>
-#include <handlers/login.hpp>
-#include <handlers/map.hpp>
-#include <handlers/register.hpp>
 
 int main(int argc, char *argv[]) {
   const auto component_list =
@@ -19,6 +22,8 @@ int main(int argc, char *argv[]) {
           .Append<handler::AddFriend>()
           .Append<handler::AddRoute>()
           .Append<handler::AvatarPath>()
+          .Append<handler::DeleteFriend>()
+          .Append<handler::DeleteRoute>()
           .Append<handler::Friends>()
           .Append<handler::Login>()
           .Append<handler::Map>()

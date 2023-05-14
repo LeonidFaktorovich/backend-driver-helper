@@ -45,7 +45,7 @@ void InsertToken(const std::string &token, const std::string &login,
       userver::storages::postgres::Query::Name{"insert_token"},
   };
   userver::storages::postgres::ResultSet res =
-      cluster->Execute(userver::storages::postgres::ClusterHostType::kSlave,
+      cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
                        kInsertToken, token, login, password);
 }
 
