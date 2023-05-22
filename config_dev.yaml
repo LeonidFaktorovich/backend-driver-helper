@@ -73,27 +73,27 @@ components_manager:
             method: POST
 
         avatars-database:
-            dbconnection: 'postgresql://postgres:8549@localhost:5432/postgres' # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres' # postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&...]
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 
         friends-database:
-            dbconnection: 'postgresql://postgres:8549@localhost:5432/postgres'
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 
         friend-requests-database:
-            dbconnection: 'postgresql://postgres:8549@localhost:5432/postgres'
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 
         routes-database:
-            dbconnection: 'postgresql://postgres:8549@localhost:5432/postgres'
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 
         users-database:
-            dbconnection: 'postgresql://postgres:8549@localhost:5432/postgres'
+            dbconnection: 'postgresql://postgres:driver@localhost:5432/postgres'
             blocking_task_processor: fs-task-processor
             dns_resolver: async
  
