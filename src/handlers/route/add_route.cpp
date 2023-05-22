@@ -1,3 +1,4 @@
+#include "utils/route.hpp"
 #include <handlers/route/add_route.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
@@ -39,17 +40,7 @@ AddRoute::HandleRequestThrow(const userver::server::http::HttpRequest &request,
       userver::formats::json::FromString(request.RequestBody());
 
   const auto &json_route = json["route"];
-  Route route;
-  route.start_x = json_route["start"]["x"].ConvertTo<double>();
-  route.start_y = json_route["start"]["y"].ConvertTo<double>();
-  route.finish_x = json_route["finish"]["x"].ConvertTo<double>();
-  route.finish_y = json_route["finish"]["y"].ConvertTo<double>();
-  route.owner = Base64Decode(json_route["owner"].As<std::string>());
-  route.date_start = userver::utils::datetime::DateFromRFC3339String(
-      Base64Decode(json_route["date_start"].As<std::string>()));
-  route.time_start = userver::utils::datetime::TimeOfDay<
-      std::chrono::duration<long long, std::ratio<60>>>(
-      Base64Decode(json_route["time_start"].As<std::string>()));
+  Route route = RouteFromJson(json_route);
   helpers::InsertRoute(pg_cluster_, token, route);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Route has been added";

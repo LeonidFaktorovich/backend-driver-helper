@@ -11,6 +11,7 @@
 #include <handlers/register.hpp>
 #include <handlers/route/add_route.hpp>
 #include <handlers/route/delete_route.hpp>
+#include <handlers/route/edit_route.hpp>
 #include <handlers/route/map.hpp>
 #include <userver/clients/dns/component.hpp>
 #include <userver/components/minimal_server_component_list.hpp>
@@ -33,6 +34,7 @@ int main(int argc, char *argv[]) {
           .Append<handler::Friends>()
           .Append<handler::FriendsIncomingRequests>()
           .Append<handler::FriendsOutgoingRequests>()
+          .Append<handler::EditRoute>()
           .Append<handler::Login>()
           .Append<handler::Map>()
           .Append<handler::Register>()
