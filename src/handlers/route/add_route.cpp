@@ -16,6 +16,7 @@ AddRoute::AddRoute(const userver::components::ComponentConfig &config,
               .GetCluster()) {
   constexpr auto kCreateTable = R"~(
       CREATE TABLE IF NOT EXISTS routes_table (
+        id BIGINT GENERATED ALWAYS AS IDENTITY,
         start_x DOUBLE PRECISION NOT NULL,
         start_y DOUBLE PRECISION NOT NULL,
         finish_x DOUBLE PRECISION NOT NULL,
