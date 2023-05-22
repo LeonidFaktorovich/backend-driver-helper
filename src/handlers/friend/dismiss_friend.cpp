@@ -1,4 +1,4 @@
-#include <handlers/add_friend.hpp>
+#include <handlers/friend/dismiss_friend.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/friend_helpers.hpp>
@@ -7,13 +7,10 @@
 
 namespace handler {
 
-AddFriend::AddFriend(const userver::components::ComponentConfig &config,
-                     const userver::components::ComponentContext &context)
+DismissFriend::DismissFriend(
+    const userver::components::ComponentConfig &config,
+    const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
-      friends_cluster_(
-          context
-              .FindComponent<userver::components::Postgres>("friends-database")
-              .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
               .GetCluster()),
@@ -21,19 +18,9 @@ AddFriend::AddFriend(const userver::components::ComponentConfig &config,
           context
               .FindComponent<userver::components::Postgres>(
                   "friend-requests-database")
-              .GetCluster()) {
-  constexpr auto kCreateTable = R"~(
-      CREATE TABLE IF NOT EXISTS friends_table (
-        user_token TEXT NOT NULL PRIMARY KEY,
-        friend_token TEXT NOT NULL
-      )
-    )~";
+              .GetCluster()) {}
 
-  using userver::storages::postgres::ClusterHostType;
-  friends_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
-}
-
-std::string AddFriend::HandleRequestThrow(
+std::string DismissFriend::HandleRequestThrow(
     const userver::server::http::HttpRequest &request,
     userver::server::request::RequestContext &) const {
   const auto &token =
@@ -49,11 +36,10 @@ std::string AddFriend::HandleRequestThrow(
     return response::ErrorResponse("User with login {} not found",
                                    friend_login);
   }
-
-  helpers::InsertFriendRequest(friend_requests_cluster_, token,
-                               friend_token.value());
+  helpers::DeleteFriendRequest(friend_requests_cluster_, friend_token.value(),
+                               token);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-  return "Friend request has been added";
+  return "Friend has been dismissed";
 }
 
 } // namespace handler

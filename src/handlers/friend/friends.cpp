@@ -1,4 +1,4 @@
-#include <handlers/friends.hpp>
+#include <handlers/friend/friends.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/friend_helpers.hpp>

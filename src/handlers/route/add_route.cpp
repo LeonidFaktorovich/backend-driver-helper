@@ -1,4 +1,4 @@
-#include <handlers/add_route.hpp>
+#include <handlers/route/add_route.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/response.hpp>
@@ -19,9 +19,10 @@ AddRoute::AddRoute(const userver::components::ComponentConfig &config,
         start_y DOUBLE PRECISION NOT NULL,
         finish_x DOUBLE PRECISION NOT NULL,
         finish_y DOUBLE PRECISION NOT NULL,
-        token TEXT NOT NULL PRIMARY KEY,
+        token TEXT NOT NULL,
         date DATE NOT NULL,
-        time TIME NOT NULL
+        time TIME NOT NULL,
+        UNIQUE (start_x, start_y, finish_x, finish_y, token, date, time)
       )
     )~";
 

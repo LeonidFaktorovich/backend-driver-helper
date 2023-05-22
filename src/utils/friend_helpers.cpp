@@ -41,15 +41,28 @@ size_t DeleteFriend(userver::storages::postgres::ClusterPtr cluster,
 }
 
 std::vector<std::string>
-GetFriendRequests(userver::storages::postgres::ClusterPtr cluster,
-                  const std::string &user_token) {
-  static const userver::storages::postgres::Query kSelectFriends{
-      "SELECT friend_token FROM friend_requests_table WHERE user_token = $1",
+GetIncomingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
+                          const std::string &user_token) {
+  static const userver::storages::postgres::Query kSelectIncoming{
+      "SELECT token_from FROM friend_requests_table WHERE token_to = $1",
+      userver::storages::postgres::Query::Name{"select_incoming"},
+  };
+  userver::storages::postgres::ResultSet res =
+      cluster->Execute(userver::storages::postgres::ClusterHostType::kSlave,
+                       kSelectIncoming, user_token);
+  return res.AsContainer<std::vector<std::string>>();
+}
+
+std::vector<std::string>
+GetOutgoingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
+                          const std::string &user_token) {
+  static const userver::storages::postgres::Query kSelectOutgoing{
+      "SELECT token_to FROM friend_requests_table WHERE token_from = $1",
       userver::storages::postgres::Query::Name{"select_friends"},
   };
   userver::storages::postgres::ResultSet res =
       cluster->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                       kSelectFriends, user_token);
+                       kSelectOutgoing, user_token);
   return res.AsContainer<std::vector<std::string>>();
 }
 
@@ -57,7 +70,7 @@ void InsertFriendRequest(userver::storages::postgres::ClusterPtr cluster,
                          const std::string &user_token,
                          const std::string &friend_token) {
   const userver::storages::postgres::Query kInsertRequest{
-      "INSERT INTO friend_requests_table (user_token, friend_token) "
+      "INSERT INTO friend_requests_table (token_from, token_to) "
       "VALUES ($1, $2) ",
       userver::storages::postgres::Query::Name{"insert_request"},
   };
@@ -69,7 +82,7 @@ size_t DeleteFriendRequest(userver::storages::postgres::ClusterPtr cluster,
                            const std::string &user_token,
                            const std::string &friend_token) {
   const userver::storages::postgres::Query kDeleteRequest{
-      "DELETE FROM friend_requests_table WHERE (user_token, friend_token) = "
+      "DELETE FROM friend_requests_table WHERE (token_from, token_to) = "
       "($1, $2)",
       userver::storages::postgres::Query::Name{"delete_request"},
   };

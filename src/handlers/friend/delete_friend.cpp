@@ -1,4 +1,4 @@
-#include <handlers/delete_friend.hpp>
+#include <handlers/friend/delete_friend.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/friend_helpers.hpp>

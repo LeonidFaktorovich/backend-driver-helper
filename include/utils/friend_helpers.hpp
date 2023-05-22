@@ -15,8 +15,11 @@ size_t DeleteFriend(userver::storages::postgres::ClusterPtr cluster,
                     const std::string &friend_token);
 
 std::vector<std::string>
-GetFriendRequests(userver::storages::postgres::ClusterPtr cluster,
-                  const std::string &user_token);
+GetIncomingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
+                          const std::string &user_token);
+std::vector<std::string>
+GetOutgoingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
+                          const std::string &user_token);
 void InsertFriendRequest(userver::storages::postgres::ClusterPtr cluster,
                          const std::string &user_token,
                          const std::string &friend_token);

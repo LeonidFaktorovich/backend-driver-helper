@@ -1,4 +1,4 @@
-#include <handlers/dismiss_friend.hpp>
+#include <handlers/friend/approve_friend.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <utils/friend_helpers.hpp>
@@ -7,10 +7,14 @@
 
 namespace handler {
 
-DismissFriend::DismissFriend(
+ApproveFriend::ApproveFriend(
     const userver::components::ComponentConfig &config,
     const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
+      friends_cluster_(
+          context
+              .FindComponent<userver::components::Postgres>("friends-database")
+              .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
               .GetCluster()),
@@ -18,9 +22,20 @@ DismissFriend::DismissFriend(
           context
               .FindComponent<userver::components::Postgres>(
                   "friend-requests-database")
-              .GetCluster()) {}
+              .GetCluster()) {
+  constexpr auto kCreateTable = R"~(
+      CREATE TABLE IF NOT EXISTS friend_requests_table (
+        token_from TEXT NOT NULL,
+        token_to TEXT NOT NULL,
+        UNIQUE (token_from, token_to)
+      )
+    )~";
 
-std::string DismissFriend::HandleRequestThrow(
+  using userver::storages::postgres::ClusterHostType;
+  friend_requests_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
+}
+
+std::string ApproveFriend::HandleRequestThrow(
     const userver::server::http::HttpRequest &request,
     userver::server::request::RequestContext &) const {
   const auto &token =
@@ -38,8 +53,10 @@ std::string DismissFriend::HandleRequestThrow(
   }
   helpers::DeleteFriendRequest(friend_requests_cluster_, friend_token.value(),
                                token);
+  helpers::InsertFriend(friends_cluster_, token, friend_token.value());
+  helpers::InsertFriend(friends_cluster_, friend_token.value(), token);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-  return "Friend has been dismissed";
+  return "Friend has been added";
 }
 
 } // namespace handler
