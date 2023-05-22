@@ -44,8 +44,8 @@ void DeleteRoute(userver::storages::postgres::ClusterPtr cluster,
                    route.time_start);
 }
 
-bool ContainsRoute(userver::storages::postgres::ClusterPtr cluster,
-                   const std::string &user_token, const Route &route) {
+bool ExistsRoute(userver::storages::postgres::ClusterPtr cluster,
+                 const std::string &user_token, const Route &route) {
   const userver::storages::postgres::Query kSelectRoute{
       "SELECT * FROM routes_table WHERE (start_x, start_y, finish_x, finish_y, "
       "token, date, time) = ($1, $2, $3, $4, $5, $6, $7)",

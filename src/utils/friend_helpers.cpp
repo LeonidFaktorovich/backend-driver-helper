@@ -40,6 +40,19 @@ size_t DeleteFriend(userver::storages::postgres::ClusterPtr cluster,
   return res.RowsAffected();
 }
 
+bool ExistFriends(userver::storages::postgres::ClusterPtr cluster,
+                  const std::string &user_token,
+                  const std::string &friend_token) {
+  const userver::storages::postgres::Query kSelectFriends{
+      "SELECT * FROM friends_table WHERE (user_token, friend_token) = ($1, $2)",
+      userver::storages::postgres::Query::Name{"select_friends"},
+  };
+  auto res =
+      cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
+                       kSelectFriends, user_token, friend_token);
+  return !res.IsEmpty();
+}
+
 std::vector<std::string>
 GetIncomingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
                           const std::string &user_token) {

@@ -11,6 +11,6 @@ std::vector<Route> GetRoutes(userver::storages::postgres::ClusterPtr cluster,
                              const std::string &user_token);
 void DeleteRoute(userver::storages::postgres::ClusterPtr cluster,
                  const std::string &user_token, const Route &route);
-bool ContainsRoute(userver::storages::postgres::ClusterPtr cluster,
-                   const std::string &user_token, const Route &route);
+bool ExistsRoute(userver::storages::postgres::ClusterPtr cluster,
+                 const std::string &user_token, const Route &route);
 } // namespace helpers

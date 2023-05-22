@@ -34,7 +34,7 @@ std::string DeleteRoute::HandleRequestThrow(
   route.time_start = userver::utils::datetime::TimeOfDay<
       std::chrono::duration<long long, std::ratio<60>>>(
       Base64Decode(json_route["time_start"].As<std::string>()));
-  if (!helpers::ContainsRoute(pg_cluster_, token, route)) {
+  if (!helpers::ExistsRoute(pg_cluster_, token, route)) {
     request.SetResponseStatus(userver::server::http::HttpStatus::kNotFound);
     return response::ErrorResponse("Route was not found");
   }

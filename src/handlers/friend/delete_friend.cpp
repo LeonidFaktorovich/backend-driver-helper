@@ -35,6 +35,12 @@ std::string DeleteFriend::HandleRequestThrow(
                                    friend_login);
   }
 
+  if (!helpers::ExistFriends(friends_cluster_, token, friend_token.value())) {
+    request.SetResponseStatus(userver::server::http::HttpStatus::kNotFound);
+    return response::ErrorResponse("Friend with login {} not found",
+                                   friend_login);
+  }
+
   helpers::DeleteFriend(friends_cluster_, token, friend_token.value());
   helpers::DeleteFriend(friends_cluster_, friend_token.value(), token);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);

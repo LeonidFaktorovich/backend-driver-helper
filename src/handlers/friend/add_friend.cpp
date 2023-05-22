@@ -51,6 +51,17 @@ std::string AddFriend::HandleRequestThrow(
                                    friend_login);
   }
 
+  if (friend_token.value() == token) {
+    request.SetResponseStatus(userver::server::http::HttpStatus::kConflict);
+    return response::ErrorResponse("Сan't be addes yourself as a friend");
+  }
+
+  if (helpers::ExistFriends(friends_cluster_, token, friend_token.value())) {
+    request.SetResponseStatus(userver::server::http::HttpStatus::kConflict);
+    return response::ErrorResponse("User with login {} is already a friend",
+                                   friend_login);
+  }
+
   helpers::InsertFriendRequest(friend_requests_cluster_, token,
                                friend_token.value());
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
