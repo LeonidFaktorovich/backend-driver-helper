@@ -16,16 +16,12 @@ AddFriend::AddFriend(const userver::components::ComponentConfig &config,
               .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
-              .GetCluster()),
-      friend_requests_cluster_(
-          context
-              .FindComponent<userver::components::Postgres>(
-                  "friend-requests-database")
               .GetCluster()) {
   constexpr auto kCreateTable = R"~(
       CREATE TABLE IF NOT EXISTS friends_table (
         user_token TEXT NOT NULL,
         friend_token TEXT NOT NULL,
+        approved BOOLEAN,
         UNIQUE (user_token, friend_token)
       )
     )~";
@@ -53,17 +49,10 @@ std::string AddFriend::HandleRequestThrow(
 
   if (friend_token.value() == token) {
     request.SetResponseStatus(userver::server::http::HttpStatus::kConflict);
-    return response::ErrorResponse("Сan't be addes yourself as a friend");
+    return response::ErrorResponse("Сan't be added yourself as a friend");
   }
 
-  if (helpers::ExistFriends(friends_cluster_, token, friend_token.value())) {
-    request.SetResponseStatus(userver::server::http::HttpStatus::kConflict);
-    return response::ErrorResponse("User with login {} is already a friend",
-                                   friend_login);
-  }
-
-  helpers::InsertFriendRequest(friend_requests_cluster_, token,
-                               friend_token.value());
+  helpers::InsertFriendRequest(friends_cluster_, token, friend_token.value());
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Friend request has been added";
 }

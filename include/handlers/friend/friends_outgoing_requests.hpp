@@ -18,7 +18,7 @@ public:
                      userver::server::request::RequestContext &) const override;
 
 private:
-  userver::storages::postgres::ClusterPtr friend_requests_cluster_;
+  userver::storages::postgres::ClusterPtr friends_cluster_;
   userver::storages::postgres::ClusterPtr users_cluster_;
 };
 } // namespace handler

@@ -11,13 +11,12 @@ DismissFriend::DismissFriend(
     const userver::components::ComponentConfig &config,
     const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
+      friends_cluster_(
+          context
+              .FindComponent<userver::components::Postgres>("friends-database")
+              .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
-              .GetCluster()),
-      friend_requests_cluster_(
-          context
-              .FindComponent<userver::components::Postgres>(
-                  "friend-requests-database")
               .GetCluster()) {}
 
 std::string DismissFriend::HandleRequestThrow(
@@ -36,8 +35,7 @@ std::string DismissFriend::HandleRequestThrow(
     return response::ErrorResponse("User with login {} not found",
                                    friend_login);
   }
-  helpers::DeleteFriendRequest(friend_requests_cluster_, friend_token.value(),
-                               token);
+  helpers::DeleteFriendRequest(friends_cluster_, friend_token.value(), token);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Friend has been dismissed";
 }

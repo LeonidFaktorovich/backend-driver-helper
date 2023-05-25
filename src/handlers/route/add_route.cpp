@@ -10,7 +10,7 @@ namespace handler {
 AddRoute::AddRoute(const userver::components::ComponentConfig &config,
                    const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
-      pg_cluster_(
+      routes_cluster_(
           context
               .FindComponent<userver::components::Postgres>("routes-database")
               .GetCluster()) {
@@ -29,7 +29,7 @@ AddRoute::AddRoute(const userver::components::ComponentConfig &config,
     )~";
 
   using userver::storages::postgres::ClusterHostType;
-  pg_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
+  routes_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
 }
 
 std::string
@@ -42,7 +42,7 @@ AddRoute::HandleRequestThrow(const userver::server::http::HttpRequest &request,
 
   const auto &json_route = json["route"];
   Route route = RouteFromJson(json_route);
-  helpers::InsertRoute(pg_cluster_, token, route);
+  helpers::InsertRoute(routes_cluster_, token, route);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Route has been added";
 }

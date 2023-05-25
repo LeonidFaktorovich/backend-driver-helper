@@ -26,13 +26,6 @@ GetToken(userver::storages::postgres::ClusterPtr cluster,
   if (res.IsEmpty()) {
     return std::nullopt;
   }
-  if (res.Size() > 1) {
-    std::stringstream err_msg;
-    err_msg << "Incorrect result size of query:\n"
-            << kSelectToken.Statement() << "\nexpected 1, actual " << res.Size()
-            << "\n";
-    throw std::runtime_error(err_msg.str());
-  }
   return res.AsSingleRow<std::string>();
 }
 
@@ -61,13 +54,6 @@ GetLogin(userver::storages::postgres::ClusterPtr cluster,
                        kSelectLogin, token);
   if (res.IsEmpty()) {
     return std::nullopt;
-  }
-  if (res.Size() > 1) {
-    std::stringstream err_msg;
-    err_msg << "Incorrect result size of query:\n"
-            << kSelectLogin.Statement() << "\nexpected 1, actual " << res.Size()
-            << "\n";
-    throw std::runtime_error(err_msg.str());
   }
   return res.AsSingleRow<std::string>();
 }

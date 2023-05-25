@@ -17,23 +17,7 @@ ApproveFriend::ApproveFriend(
               .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
-              .GetCluster()),
-      friend_requests_cluster_(
-          context
-              .FindComponent<userver::components::Postgres>(
-                  "friend-requests-database")
-              .GetCluster()) {
-  constexpr auto kCreateTable = R"~(
-      CREATE TABLE IF NOT EXISTS friend_requests_table (
-        token_from TEXT NOT NULL,
-        token_to TEXT NOT NULL,
-        UNIQUE (token_from, token_to)
-      )
-    )~";
-
-  using userver::storages::postgres::ClusterHostType;
-  friend_requests_cluster_->Execute(ClusterHostType::kMaster, kCreateTable);
-}
+              .GetCluster()) {}
 
 std::string ApproveFriend::HandleRequestThrow(
     const userver::server::http::HttpRequest &request,
@@ -51,10 +35,8 @@ std::string ApproveFriend::HandleRequestThrow(
     return response::ErrorResponse("User with login {} not found",
                                    friend_login);
   }
-  helpers::DeleteFriendRequest(friend_requests_cluster_, friend_token.value(),
-                               token);
-  helpers::InsertFriend(friends_cluster_, token, friend_token.value());
-  helpers::InsertFriend(friends_cluster_, friend_token.value(), token);
+  helpers::DeleteFriendRequestAndAddFriends(friends_cluster_,
+                                            friend_token.value(), token);
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Friend has been added";
 }

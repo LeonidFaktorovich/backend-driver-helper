@@ -10,8 +10,11 @@
 #include <handlers/login.hpp>
 #include <handlers/register.hpp>
 #include <handlers/route/add_route.hpp>
+#include <handlers/route/approve_fellow.hpp>
 #include <handlers/route/delete_route.hpp>
+#include <handlers/route/dismiss_fellow.hpp>
 #include <handlers/route/edit_route.hpp>
+#include <handlers/route/join_route.hpp>
 #include <handlers/route/map.hpp>
 #include <userver/clients/dns/component.hpp>
 #include <userver/components/minimal_server_component_list.hpp>
@@ -26,21 +29,24 @@ int main(int argc, char *argv[]) {
       userver::components::MinimalServerComponentList()
           .Append<handler::AddFriend>()
           .Append<handler::AddRoute>()
+          .Append<handler::ApproveFellow>()
           .Append<handler::ApproveFriend>()
           .Append<handler::AvatarPath>()
           .Append<handler::DeleteFriend>()
           .Append<handler::DeleteRoute>()
+          .Append<handler::DismissFellow>()
           .Append<handler::DismissFriend>()
           .Append<handler::Friends>()
           .Append<handler::FriendsIncomingRequests>()
           .Append<handler::FriendsOutgoingRequests>()
           .Append<handler::EditRoute>()
+          .Append<handler::JoinRoute>()
           .Append<handler::Login>()
           .Append<handler::Map>()
           .Append<handler::Register>()
           .Append<userver::components::Postgres>("avatars-database")
+          .Append<userver::components::Postgres>("fellows-database")
           .Append<userver::components::Postgres>("friends-database")
-          .Append<userver::components::Postgres>("friend-requests-database")
           .Append<userver::components::Postgres>("routes-database")
           .Append<userver::components::Postgres>("users-database")
           .Append<userver::components::TestsuiteSupport>()

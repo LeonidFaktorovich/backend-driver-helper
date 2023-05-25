@@ -12,10 +12,9 @@ FriendsIncomingRequests::FriendsIncomingRequests(
     const userver::components::ComponentConfig &config,
     const userver::components::ComponentContext &context)
     : HttpHandlerBase(config, context),
-      friend_requests_cluster_(
+      friends_cluster_(
           context
-              .FindComponent<userver::components::Postgres>(
-                  "friend-requests-database")
+              .FindComponent<userver::components::Postgres>("friends-database")
               .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
@@ -28,7 +27,7 @@ std::string FriendsIncomingRequests::HandleRequestThrow(
       userver::crypto::base64::Base64Decode(request.GetHeader("token"));
 
   const auto outgoing_requests_tokens =
-      helpers::GetIncomingFriendRequests(friend_requests_cluster_, token);
+      helpers::GetIncomingFriendRequests(friends_cluster_, token);
 
   std::vector<std::string> logins;
   for (const auto &friend_token : outgoing_requests_tokens) {

@@ -21,6 +21,10 @@ Map::Map(const userver::components::ComponentConfig &config,
               .GetCluster()),
       users_cluster_(
           context.FindComponent<userver::components::Postgres>("users-database")
+              .GetCluster()),
+      fellows_cluster_(
+          context
+              .FindComponent<userver::components::Postgres>("fellows-database")
               .GetCluster()) {}
 
 std::string
@@ -32,17 +36,24 @@ Map::HandleRequestThrow(const userver::server::http::HttpRequest &request,
   friends_tokens.push_back(token);
 
   std::vector<Route> routes;
+  std::vector<std::vector<std::string>> approved;
+  std::vector<std::vector<std::string>> wait_approve;
   for (const auto &friend_token : friends_tokens) {
     auto friend_routes = helpers::GetRoutes(routes_cluster_, friend_token);
     auto friend_login = helpers::GetLogin(users_cluster_, friend_token).value();
     for (auto &route : friend_routes) {
       route.owner = friend_login;
+      const auto route_id =
+          helpers::GetRouteId(routes_cluster_, friend_token, route).value();
+      approved.emplace_back(helpers::GetFellows(fellows_cluster_, route_id));
+      wait_approve.emplace_back(
+          helpers::GetFellowRequests(fellows_cluster_, route_id));
     }
     std::copy(friend_routes.begin(), friend_routes.end(),
               std::back_inserter(routes));
   }
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-  return response::RoutesResponse(routes);
+  return response::RoutesResponse(routes, approved, wait_approve);
 }
 
 } // namespace handler

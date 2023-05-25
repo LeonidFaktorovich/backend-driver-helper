@@ -15,7 +15,10 @@ std::string ErrorResponse(fmt::format_string<T...> fmt, T &&...args) {
 }
 
 std::string TokenResponse(std::string_view token);
-std::string RoutesResponse(const std::vector<Route> &routes);
+std::string
+RoutesResponse(const std::vector<Route> &routes,
+               const std::vector<std::vector<std::string>> &approved,
+               const std::vector<std::vector<std::string>> &wait_approve);
 std::string LoginsResponse(const std::vector<std::string> &logins);
 std::string PathResponse(std::string_view path);
 } // namespace response

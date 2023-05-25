@@ -5,11 +5,11 @@
 
 namespace handler {
 
-class DismissFriend final : public userver::server::handlers::HttpHandlerBase {
+class DismissFellow final : public userver::server::handlers::HttpHandlerBase {
 public:
-  static constexpr std::string_view kName = "handler-dismiss-friend";
+  static constexpr std::string_view kName = "handler-dismiss-fellow";
 
-  DismissFriend(const userver::components::ComponentConfig &config,
+  DismissFellow(const userver::components::ComponentConfig &config,
                 const userver::components::ComponentContext &context);
 
   std::string
@@ -17,7 +17,8 @@ public:
                      userver::server::request::RequestContext &) const override;
 
 private:
-  userver::storages::postgres::ClusterPtr friends_cluster_;
   userver::storages::postgres::ClusterPtr users_cluster_;
+  userver::storages::postgres::ClusterPtr routes_cluster_;
+  userver::storages::postgres::ClusterPtr fellows_cluster_;
 };
 } // namespace handler

@@ -7,12 +7,9 @@ namespace helpers {
 std::vector<std::string>
 GetFriends(userver::storages::postgres::ClusterPtr cluster,
            const std::string &user_token);
-void InsertFriend(userver::storages::postgres::ClusterPtr cluster,
-                  const std::string &user_token,
-                  const std::string &friend_token);
-size_t DeleteFriend(userver::storages::postgres::ClusterPtr cluster,
-                    const std::string &user_token,
-                    const std::string &friend_token);
+void DeleteFriends(userver::storages::postgres::ClusterPtr cluster,
+                   const std::string &user_token,
+                   const std::string &friend_token);
 bool ExistFriends(userver::storages::postgres::ClusterPtr cluster,
                   const std::string &user_token,
                   const std::string &friend_token);
@@ -26,8 +23,11 @@ GetOutgoingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
 void InsertFriendRequest(userver::storages::postgres::ClusterPtr cluster,
                          const std::string &user_token,
                          const std::string &friend_token);
-size_t DeleteFriendRequest(userver::storages::postgres::ClusterPtr cluster,
-                           const std::string &user_token,
-                           const std::string &friend_token);
+void DeleteFriendRequest(userver::storages::postgres::ClusterPtr cluster,
+                         const std::string &user_token,
+                         const std::string &friend_token);
 
+void DeleteFriendRequestAndAddFriends(
+    userver::storages::postgres::ClusterPtr cluster,
+    const std::string &user_token, const std::string &friend_token);
 } // namespace helpers
