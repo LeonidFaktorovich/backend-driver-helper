@@ -37,7 +37,6 @@ Map::HandleRequestThrow(const userver::server::http::HttpRequest &request,
 
   std::vector<Route> routes;
   std::vector<std::vector<std::string>> approved;
-  std::vector<std::vector<std::string>> wait_approve;
   for (const auto &friend_token : friends_tokens) {
     auto friend_routes = helpers::GetRoutes(routes_cluster_, friend_token);
     auto friend_login = helpers::GetLogin(users_cluster_, friend_token).value();
@@ -45,15 +44,17 @@ Map::HandleRequestThrow(const userver::server::http::HttpRequest &request,
       route.owner = friend_login;
       const auto route_id =
           helpers::GetRouteId(routes_cluster_, friend_token, route).value();
-      approved.emplace_back(helpers::GetFellows(fellows_cluster_, route_id));
-      wait_approve.emplace_back(
-          helpers::GetFellowRequests(fellows_cluster_, route_id));
+      auto fellows = helpers::GetFellows(fellows_cluster_, route_id);
+      for (auto &fellow : fellows) {
+          fellow = helpers::GetLogin(users_cluster_, fellow).value();
+      }
+      approved.emplace_back(std::move(fellows));
     }
     std::copy(friend_routes.begin(), friend_routes.end(),
               std::back_inserter(routes));
   }
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-  return response::RoutesResponse(routes, approved, wait_approve);
+  return response::RoutesResponse(routes, approved, {});
 }
 
 } // namespace handler

@@ -2,6 +2,7 @@
 #include <handlers/route/join_route.hpp>
 #include <userver/components/component_context.hpp>
 #include <userver/storages/postgres/component.hpp>
+#include <utils/friend_helpers.hpp>
 #include <utils/response.hpp>
 #include <utils/route_helpers.hpp>
 #include <utils/token_helpers.hpp>
@@ -21,6 +22,10 @@ JoinRoute::JoinRoute(const userver::components::ComponentConfig &config,
       fellows_cluster_(
           context
               .FindComponent<userver::components::Postgres>("fellows-database")
+              .GetCluster()),
+      friends_cluster_(
+          context
+              .FindComponent<userver::components::Postgres>("friends-database")
               .GetCluster()) {
   constexpr auto kCreateTable = R"~(
         CREATE TABLE IF NOT EXISTS fellows_table (
@@ -56,9 +61,14 @@ std::string JoinRoute::HandleRequestThrow(
     return response::ErrorResponse("Route was not found");
   }
 
-  helpers::InsertFellowRequest(fellows_cluster_, token, route_id.value());
+  if (!helpers::ExistFriends(friends_cluster_, token, owner_token.value())) {
+    request.SetResponseStatus(userver::server::http::HttpStatus::kNotFound);
+    return response::ErrorResponse("Is not a friend");
+  }
+
+  helpers::AddFellow(fellows_cluster_, token, route_id.value());
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-  return "Fellow request has been added";
+  return "Fellow has been added";
 }
 
 } // namespace handler

@@ -1,18 +1,12 @@
 #include "handlers/route/delete_route.hpp"
 #include <handlers/avatar_path.hpp>
 #include <handlers/friend/add_friend.hpp>
-#include <handlers/friend/approve_friend.hpp>
 #include <handlers/friend/delete_friend.hpp>
-#include <handlers/friend/dismiss_friend.hpp>
 #include <handlers/friend/friends.hpp>
-#include <handlers/friend/friends_incoming_requests.hpp>
-#include <handlers/friend/friends_outgoing_requests.hpp>
 #include <handlers/login.hpp>
 #include <handlers/register.hpp>
 #include <handlers/route/add_route.hpp>
-#include <handlers/route/approve_fellow.hpp>
 #include <handlers/route/delete_route.hpp>
-#include <handlers/route/dismiss_fellow.hpp>
 #include <handlers/route/edit_route.hpp>
 #include <handlers/route/join_route.hpp>
 #include <handlers/route/map.hpp>
@@ -29,16 +23,10 @@ int main(int argc, char *argv[]) {
       userver::components::MinimalServerComponentList()
           .Append<handler::AddFriend>()
           .Append<handler::AddRoute>()
-          .Append<handler::ApproveFellow>()
-          .Append<handler::ApproveFriend>()
           .Append<handler::AvatarPath>()
           .Append<handler::DeleteFriend>()
           .Append<handler::DeleteRoute>()
-          .Append<handler::DismissFellow>()
-          .Append<handler::DismissFriend>()
           .Append<handler::Friends>()
-          .Append<handler::FriendsIncomingRequests>()
-          .Append<handler::FriendsOutgoingRequests>()
           .Append<handler::EditRoute>()
           .Append<handler::JoinRoute>()
           .Append<handler::Login>()

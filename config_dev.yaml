@@ -11,16 +11,6 @@ components_manager:
             path: /add_route
             task_processor: main-task-processor
             method: POST
-        
-        handler-approve-friend:
-            path: /approve_friend
-            task_processor: main-task-processor
-            method: POST
-
-        handler-approve-fellow:
-            path: /approve_fellow
-            task_processor: main-task-processor
-            method: POST
 
         handler-avatar-path:
             path: /avatar_path
@@ -37,28 +27,8 @@ components_manager:
             task_processor: main-task-processor
             method: POST
 
-        handler-dismiss-friend:
-            path: /dismiss_friend
-            task_processor: main-task-processor
-            method: POST
-
-        handler-dismiss-fellow:
-            path: /dismiss_fellow
-            task_processor: main-task-processor
-            method: POST
-
         handler-friends:
             path: /friends
-            task_processor: main-task-processor
-            method: GET
-
-        handler-friends-incoming-requests:
-            path: /friends/incoming_requests
-            task_processor: main-task-processor
-            method: GET
-
-        handler-friends-outgoing-requests:
-            path: /friends/outgoing_requests
             task_processor: main-task-processor
             method: GET
 

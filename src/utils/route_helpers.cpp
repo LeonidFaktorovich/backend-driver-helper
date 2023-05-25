@@ -98,13 +98,13 @@ GetRouteId(userver::storages::postgres::ClusterPtr cluster,
 
 void AddFellow(userver::storages::postgres::ClusterPtr cluster,
                const std::string &user_token, int64_t route_id) {
-  const userver::storages::postgres::Query kUpdateFellow{
-      "UPDATE fellows_table SET approved = TRUE WHERE (route_id, token) = "
-      "VALUES ($1, $2)",
-      userver::storages::postgres::Query::Name{"update_fellow"},
+  const userver::storages::postgres::Query kAddFellow{
+      "INSERT INTO fellows_table (route_id, token, approved) "
+      "VALUES ($1, $2, TRUE)",
+      userver::storages::postgres::Query::Name{"add_fellow"},
   };
   cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
-                   kUpdateFellow, route_id, user_token);
+                   kAddFellow, route_id, user_token);
 }
 
 std::vector<std::string>
@@ -113,9 +113,9 @@ GetFellows(userver::storages::postgres::ClusterPtr cluster, int64_t route_id) {
       "SELECT token FROM fellows_table WHERE (route_id, approved) = ($1, TRUE)",
       userver::storages::postgres::Query::Name{"select_fellows"},
   };
-  userver::storages::postgres::ResultSet res = 
+  userver::storages::postgres::ResultSet res =
       cluster->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                           kSelectFellows, route_id);
+                       kSelectFellows, route_id);
   return res.AsContainer<std::vector<std::string>>();
 }
 
@@ -138,41 +138,6 @@ void DeleteFellows(userver::storages::postgres::ClusterPtr cluster,
   };
   cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
                    kDeleteFellows, route_id);
-}
-
-void InsertFellowRequest(userver::storages::postgres::ClusterPtr cluster,
-                         const std::string &user_token, int64_t route_id) {
-  const userver::storages::postgres::Query kInsertRequests{
-      "INSERT INTO fellows_table (route_id, token, approved)"
-      "VALUES ($1, $2, FALSE)",
-      userver::storages::postgres::Query::Name{"insert_request"},
-  };
-  cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
-                   kInsertRequests, route_id, user_token);
-}
-std::vector<std::string>
-GetFellowRequests(userver::storages::postgres::ClusterPtr cluster,
-                  int64_t route_id) {
-  static const userver::storages::postgres::Query kSelectRequests{
-      "SELECT token FROM fellows_table WHERE (route_id, approved) = ($1, "
-      "FALSE)",
-      userver::storages::postgres::Query::Name{"select_requests"},
-  };
-  auto res = cluster
-                 ->Execute(userver::storages::postgres::ClusterHostType::kSlave,
-                           kSelectRequests, route_id)
-                 .AsContainer<std::vector<std::string>>();
-  return res;
-}
-void DeleteFellowRequest(userver::storages::postgres::ClusterPtr cluster,
-                         const std::string &user_token, int64_t route_id) {
-  const userver::storages::postgres::Query kDeleteRequest{
-      "DELETE FROM fellows_table WHERE (route_id, token, approved) = ($1, $2, "
-      "FALSE)",
-      userver::storages::postgres::Query::Name{"delete_request"},
-  };
-  cluster->Execute(userver::storages::postgres::ClusterHostType::kMaster,
-                   kDeleteRequest, route_id, user_token);
 }
 
 } // namespace helpers

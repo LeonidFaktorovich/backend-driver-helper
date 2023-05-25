@@ -20,5 +20,6 @@ private:
   userver::storages::postgres::ClusterPtr users_cluster_;
   userver::storages::postgres::ClusterPtr routes_cluster_;
   userver::storages::postgres::ClusterPtr fellows_cluster_;
+  userver::storages::postgres::ClusterPtr friends_cluster_;
 };
 } // namespace handler

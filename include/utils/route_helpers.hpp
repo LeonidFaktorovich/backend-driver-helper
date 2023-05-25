@@ -29,11 +29,4 @@ void DeleteFellow(userver::storages::postgres::ClusterPtr cluster,
 void DeleteFellows(userver::storages::postgres::ClusterPtr cluster,
                    int64_t route_id);
 
-void InsertFellowRequest(userver::storages::postgres::ClusterPtr cluster,
-                         const std::string &user_token, int64_t route_id);
-std::vector<std::string>
-GetFellowRequests(userver::storages::postgres::ClusterPtr cluster,
-                  int64_t route_id);
-void DeleteFellowRequest(userver::storages::postgres::ClusterPtr cluster,
-                         const std::string &user_token, int64_t route_id);
 } // namespace helpers

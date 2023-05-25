@@ -11,7 +11,8 @@ std::string TokenResponse(std::string_view token) {
 std::string
 RoutesResponse(const std::vector<Route> &routes,
                const std::vector<std::vector<std::string>> &approved,
-               const std::vector<std::vector<std::string>> &wait_approve) {
+               [[maybe_unused]] const std::vector<std::vector<std::string>>
+                   &wait_approve) {
   userver::formats::json::ValueBuilder response;
   response["routes"] = userver::formats::json::MakeArray();
   for (size_t i = 0; i < routes.size(); ++i) {
@@ -31,10 +32,6 @@ RoutesResponse(const std::vector<Route> &routes,
       value["approved"].PushBack(userver::crypto::base64::Base64Encode(fellow));
     }
     value["wait_approve"] = userver::formats::json::MakeArray();
-    for (const auto &request : wait_approve[i]) {
-      value["wait_approve"].PushBack(
-          userver::crypto::base64::Base64Encode(request));
-    }
     response["routes"].PushBack(std::move(value));
   }
   return userver::formats::json::ToString(response.ExtractValue());

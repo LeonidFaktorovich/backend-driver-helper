@@ -13,21 +13,7 @@ void DeleteFriends(userver::storages::postgres::ClusterPtr cluster,
 bool ExistFriends(userver::storages::postgres::ClusterPtr cluster,
                   const std::string &user_token,
                   const std::string &friend_token);
+void AddFriends(userver::storages::postgres::ClusterPtr cluster,
+                const std::string &user_token, const std::string &friend_token);
 
-std::vector<std::string>
-GetIncomingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
-                          const std::string &user_token);
-std::vector<std::string>
-GetOutgoingFriendRequests(userver::storages::postgres::ClusterPtr cluster,
-                          const std::string &user_token);
-void InsertFriendRequest(userver::storages::postgres::ClusterPtr cluster,
-                         const std::string &user_token,
-                         const std::string &friend_token);
-void DeleteFriendRequest(userver::storages::postgres::ClusterPtr cluster,
-                         const std::string &user_token,
-                         const std::string &friend_token);
-
-void DeleteFriendRequestAndAddFriends(
-    userver::storages::postgres::ClusterPtr cluster,
-    const std::string &user_token, const std::string &friend_token);
 } // namespace helpers

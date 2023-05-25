@@ -52,7 +52,7 @@ std::string AddFriend::HandleRequestThrow(
     return response::ErrorResponse("Сan't be added yourself as a friend");
   }
 
-  helpers::InsertFriendRequest(friends_cluster_, token, friend_token.value());
+  helpers::AddFriends(friends_cluster_, token, friend_token.value());
   request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
   return "Friend request has been added";
 }
